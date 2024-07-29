@@ -1,32 +1,20 @@
 import arrow from 'src/images/arrow.svg';
 
 import styles from './ArrowButton.module.scss';
-import { useState } from 'react';
+import clsx from 'clsx';
 
 /** Функция для обработки открытия/закрытия формы */
 export type OnClick = (open: boolean) => void;
 
-type ArrowButtonProps = {
+export type ArrowButtonProps = {
+	formOpen: boolean,
 	onclick: OnClick
 };
 
 export const ArrowButton = (props: ArrowButtonProps) => {
-	let [formOpen, setFormOpen] = useState(false);
-	let [divClassName, setDivClassName] = useState(styles.container);
-	let [imgClassName, setImgClassName] = useState(styles.arrow);
 
 	const handleClick = () => {
-		if (formOpen) {
-			setDivClassName(styles.container);
-			setImgClassName(styles.arrow);
-			setFormOpen(false);
-			props.onclick(false);
-		} else {
-			setDivClassName(styles.container + ' ' + styles.container_open);
-			setImgClassName(styles.arrow + ' ' + styles.arrow_open);
-			setFormOpen(true);
-			props.onclick(true);
-		}
+		props.onclick(!props.formOpen);
 	}
 
 	return (
@@ -35,8 +23,8 @@ export const ArrowButton = (props: ArrowButtonProps) => {
 			role='button'
 			aria-label='Открыть/Закрыть форму параметров статьи'
 			tabIndex={0}
-			className={divClassName}>
-			<img src={arrow} alt='иконка стрелочки' className={imgClassName}
+			className={clsx(styles.container, {[styles.container_open]: props.formOpen})}>
+			<img src={arrow} alt='иконка стрелочки' className={clsx(styles.arrow, {[styles.arrow_open]: props.formOpen})}
 			onClick={handleClick} />
 		</div>
 	);
