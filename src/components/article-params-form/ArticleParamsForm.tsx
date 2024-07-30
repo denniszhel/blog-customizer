@@ -2,7 +2,7 @@ import { ArrowButton } from 'components/arrow-button';
 import { Button } from 'components/button';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Select } from '../select';
 import { useOutsideClickClose } from './hooks/useOutsideClickClose';
 import { Text } from 'components/text';
@@ -24,9 +24,8 @@ type ArticleParamsFormProps = {
 };
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
-	const [formSubmitted, setFormSubmitted] = useState<number>(0);
 	const [formOpen, setFormOpen] = useState<boolean>(false);
-	const [state, setState] = useState<ArticleStateType>(defaultArticleState);
+	const [articleParamsFormState, setArticleParamsFormState] = useState<ArticleStateType>(defaultArticleState);
 	const rootRef = useRef<HTMLDivElement | null>(null);
 
 	useOutsideClickClose({
@@ -37,25 +36,19 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 
 	const handleOnChange = (field: keyof ArticleStateType) => {
 		return (value: OptionType) => {
-		  setState((state) => ({ ...state, [field]: value }));
-		  setFormSubmitted(0);
+		  setArticleParamsFormState((state) => ({ ...state, [field]: value }));
 		};
 	};
 
-	useEffect(() => {
-		if (formSubmitted) {
-			props.onApply(state);
-		}
-	}, [formSubmitted]);
-
 	function abortChanges() {
-		setState(defaultArticleState);
-		setFormSubmitted(1);
+		setArticleParamsFormState(defaultArticleState);
+		props.onApply(defaultArticleState);
 	}
 
 	function submitChanges(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
-		setFormSubmitted(2);
+		props.onApply(articleParamsFormState);
+		setFormOpen(false);
 	}
 
 	return (
@@ -68,33 +61,33 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 					</Text>
 					<div className={styles.mainContainer}>
 						<Select
-							selected={state.fontFamilyOption}
+							selected={articleParamsFormState.fontFamilyOption}
 							options={fontFamilyOptions}
 							onChange={handleOnChange('fontFamilyOption')}
 							title='Шрифт'
 						/>
 						<RadioGroup
 							name='font-size-group'
-							selected={state.fontSizeOption}
+							selected={articleParamsFormState.fontSizeOption}
 							options={fontSizeOptions}
 							onChange={handleOnChange('fontSizeOption')}
 							title='Размер шрифта'
 						/>
 						<Select
-							selected={state.fontColor}
+							selected={articleParamsFormState.fontColor}
 							options={fontColors}
 							onChange={handleOnChange('fontColor')}
 							title='Цвет шрифта'
 						/>
 						<Separator />
 						<Select
-							selected={state.backgroundColor}
+							selected={articleParamsFormState.backgroundColor}
 							options={backgroundColors}
 							onChange={handleOnChange('backgroundColor')}
 							title='Цвет фона'
 						/>
 						<Select
-							selected={state.contentWidth}
+							selected={articleParamsFormState.contentWidth}
 							options={contentWidthArr}
 							onChange={handleOnChange('contentWidth')}
 							title='Ширина контента'
